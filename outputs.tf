@@ -1,5 +1,4 @@
-output "output_name" {
-  value       = var.variable_name
-  description = "description of the output"
-  sensitive   = true
+output "role_arn" {
+  description = "ARN of the task role"
+  value       = aws_iam_role.this.arn
 }
