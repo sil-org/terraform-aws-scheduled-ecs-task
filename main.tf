@@ -65,5 +65,6 @@ resource "aws_cloudwatch_event_target" "this" {
     task_count          = 1
     launch_type         = "EC2"
     task_definition_arn = var.task_definition_arn
+    propagate_tags      = "TASK_DEFINITION"
   }
 }
