@@ -8,7 +8,7 @@ resource "random_id" "name_suffix" {
 }
 
 resource "aws_iam_role" "this" {
-  name = "ecs_events-${local.unique_name}"
+  name = "events-${local.unique_name}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
