@@ -11,6 +11,11 @@ variable "task_definition_arn" {
 variable "name" {
   description = "name of event assigned to "
   type        = string
+
+  validation {
+    condition     = length(var.name) <= 48
+    error_message = "The variable 'name' must be at most 48 characters to avoid exceeding the aws_iam_role name limit of 64 characters."
+  }
 }
 
 variable "event_schedule" {
