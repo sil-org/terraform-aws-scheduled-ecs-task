@@ -2,13 +2,13 @@
 
 This module manages an ECS task scheduled by EventBridge 
 
-This module is published in [Terraform Registry](https://registry.terraform.io/modules/silinternational/scheduled-ecs-task/aws/latest).
+This module is published in [Terraform Registry](https://registry.terraform.io/modules/sil-org/scheduled-ecs-task/aws/latest).
 
 ## Usage Example
 
 ```hcl
 module "this" {
-  source = "silinternational/scheduled-ecs-task/aws"
+  source = "sil-org/scheduled-ecs-task/aws"
   version = "0.1.0"
 
   name                   = "${var.app_name}-cron-${var.app_env}-${local.aws_region}"
