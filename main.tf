@@ -40,7 +40,7 @@ resource "aws_iam_role_policy" "this" {
       {
         Effect   = "Allow"
         Action   = "ecs:RunTask"
-        Resource = replace(var.task_definition_arn, "/:\\d+$/", ":*")
+        Resource = "${replace(var.task_definition_arn, "/:\\d+$/", "")}:*"
       },
     ]
   })
