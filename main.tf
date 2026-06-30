@@ -22,7 +22,6 @@ resource "aws_iam_role" "this" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = ""
         Effect = "Allow"
         Principal = {
           Service = "events.amazonaws.com"
