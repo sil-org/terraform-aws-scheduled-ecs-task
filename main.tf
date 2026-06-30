@@ -33,17 +33,24 @@ resource "aws_iam_role_policy" "this" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = "iam:PassRole"
-        Resource = "*"
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          data.aws_ecs_task_definition.this.task_role_arn,
+          data.aws_ecs_task_definition.this.execution_role_arn,
+        ]
       },
       {
         Effect   = "Allow"
         Action   = "ecs:RunTask"
-        Resource = "${replace(var.task_definition_arn, "/:\\d+$/", "")}:*"
+        Resource = "${data.aws_ecs_task_definition.this.arn_without_revision}:*"
       },
     ]
   })
+}
+
+data "aws_ecs_task_definition" "this" {
+  task_definition = var.task_definition_arn
 }
 
 resource "aws_cloudwatch_event_rule" "this" {
