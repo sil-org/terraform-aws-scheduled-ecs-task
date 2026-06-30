@@ -49,6 +49,11 @@ resource "aws_iam_role_policy" "this" {
         Effect   = "Allow"
         Action   = "ecs:RunTask"
         Resource = "${data.aws_ecs_task_definition.this.arn_without_revision}:*"
+        Condition = {
+          ArnEquals = {
+            "ecs:cluster" = var.ecs_cluster_arn
+          }
+        }
       },
     ]
   })
