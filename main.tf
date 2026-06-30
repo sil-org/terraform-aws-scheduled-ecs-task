@@ -34,7 +34,7 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy" "this" {
-  name = "ecs_events_run_task_with_any_role"
+  name = "run_task"
   role = aws_iam_role.this.id
 
   policy = data.aws_iam_policy_document.this.json
