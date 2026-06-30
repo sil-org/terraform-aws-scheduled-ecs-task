@@ -35,10 +35,10 @@ resource "aws_iam_role_policy" "this" {
       {
         Effect   = "Allow"
         Action   = "iam:PassRole"
-        Resource = compact([
+        Resource = [for arn in [
           data.aws_ecs_task_definition.this.task_role_arn,
           data.aws_ecs_task_definition.this.execution_role_arn,
-        ])
+        ] : arn if arn != null && arn != ""]
         Condition = {
           StringEquals = {
             "iam:PassedToService" = "ecs-tasks.amazonaws.com"
