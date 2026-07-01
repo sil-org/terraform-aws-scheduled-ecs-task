@@ -1,6 +1,14 @@
 
 locals {
   unique_name = "${var.name}-${random_id.name_suffix.b64_url}"
+  pass_role_resources = compact([
+    data.aws_ecs_task_definition.this.task_role_arn,
+    data.aws_ecs_task_definition.this.execution_role_arn,
+  ])
+}
+
+data "aws_ecs_task_definition" "this" {
+  task_definition = var.task_definition_arn
 }
 
 resource "random_id" "name_suffix" {
@@ -14,7 +22,6 @@ resource "aws_iam_role" "this" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = ""
         Effect = "Allow"
         Principal = {
           Service = "events.amazonaws.com"
@@ -26,24 +33,40 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy" "this" {
-  name = "ecs_events_run_task_with_any_role"
+  name = "run_task"
   role = aws_iam_role.this.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "iam:PassRole"
-        Resource = "*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = "ecs:RunTask"
-        Resource = "${replace(var.task_definition_arn, "/:\\d+$/", "")}:*"
-      },
-    ]
-  })
+  policy = data.aws_iam_policy_document.this.json
+}
+
+data "aws_iam_policy_document" "this" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ecs:RunTask"]
+    resources = ["${data.aws_ecs_task_definition.this.arn_without_revision}:*"]
+
+    condition {
+      test     = "ArnEquals"
+      variable = "ecs:cluster"
+      values   = [var.ecs_cluster_arn]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = length(local.pass_role_resources) > 0 ? [1] : []
+
+    content {
+      effect    = "Allow"
+      actions   = ["iam:PassRole"]
+      resources = local.pass_role_resources
+
+      condition {
+        test     = "StringEquals"
+        variable = "iam:PassedToService"
+        values   = ["ecs-tasks.amazonaws.com"]
+      }
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "this" {
